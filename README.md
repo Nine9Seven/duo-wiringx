@@ -1,59 +1,64 @@
-wiringX
+
+### Prerequisites
+```
+$ sudo apt update && sudo apt install git cmake autoconf automake libtool build-essential
+$ cd ~ && git clone https://github.com/milkv-duo/host-tools.git
+```
+For Milk-V Duo (RISC-V)
 ========
+```
+$ cd ~
+$ export PATH=$PATH:~/host-tools/gcc/riscv64-linux-musl-x86_64/bin
+$ export CC=riscv64-unknown-linux-musl-gcc
+$ git clone https://github.com/Nine9Seven/duo-wiringx.git && cd duo-wiringx/
+$ rm -rf build && mkdir build && cd build
+$ cmake .. -DCMAKE_SYSTEM_NAME=Linux -DCMAKE_SYSTEM_PROCESSOR=riscv64 -DCMAKE_C_COMPILER=$CC
+$ make
+```
+### Verify
+```
+$ file libwiringx.so  # Should show "RISC-V"
+```
+### Deploy to Duo
+```
+$ ssh root@192.168.42.1 "mv /usr/lib/libwiringx.so /usr/lib/libwiringx.so.bak"
+$ scp libwiringx.so root@192.168.42.1:/usr/lib/
+$ scp wiringx-* root@192.168.42.1:/usr/sbin/
+```
+### Test blink
+```
+$ ssh root@192.168.42.1 "wiringx-blink milkv_duo256m 25"
+```
 
-wiringX is a modular approach to several GPIO interfaces.
+For AArch64 (64-bit ARM)
+========
+```
+$ cd ~
+$ export PATH=$PATH:~/host-tools/gcc/gcc-linaro-7.3.1-2018.05-x86_64_aarch64-linux-gnu/bin
+$ export CC=aarch64-linux-gnu-gcc
+$ git clone https://github.com/Nine9Seven/duo-wiringx.git && cd duo-wiringx/
+$ rm -rf build && mkdir build && cd build
+$ cmake .. -DCMAKE_SYSTEM_NAME=Linux -DCMAKE_SYSTEM_PROCESSOR=aarch64 -DCMAKE_C_COMPILER=$CC
+$ make
+```
+### Verify
+```
+$ file libwiringx.so  # Should show "ARM aarch64"
+```
+### Deploy to target
+```
+$ ssh root@192.168.42.1 "mv /usr/lib/libwiringx.so /usr/lib/libwiringx.so.bak"
+$ scp libwiringx.so root@192.168.42.1:/usr/lib/
+$ scp wiringx-* root@192.168.42.1:/usr/sbin/
+```
+### Test blink
+```
+$ wiringx-blink milkv_duo256m 25
+```
 
-wiringX will export all common GPIO functions also found libraries such as wiringPi, 
-wiringHB, wiringOP, etc but when using wiringX all the appropriate GPIO functions
-are available for various different platforms with only one uniform library. So
-when using wiringX, your program will just work in regard of GPIO functionality,
-whatever platform your program is running on.
 
-The wiringPi and wiringHB are almost a direct copy of their initial library.
-However, wiringX currently does not yet support all features of the
-Hummingboard and Raspberry Pi I/O. Therefore, wiringPi has been
-stripped so it only supports those features also supported by wiringX.
-
-Those features currently are:
-- GPIO reading, writing, and interrupts.
-- IC2 reading and writing.
-
+Documentation
+========
 Please refer to the documentation at https://manual.wiringx.org or in the docs folder.
-
 ### Donations
-
 donate@pilight.org
-
-### Installation:
-
-* Let it automatically build and generate a deb or rpm package:
-```
-#Make sure you have prerequisites
-#For Debian based linuxes
-sudo apt-get install build-essential
-#For Red-Hat based linuxes
-yum groupinstall "Development tools"
-
-mkdir build
-cd build
-cmake ..
-make
-#For Debian based linuxes
-cpack -G DEB
-#For Red-Hat based linuxes
-cpack -G RPM
-```
-* To install the final package run:
-```
-#For Debian based linuxes
-dpkg -i libwiringx*.deb
-#For Red-Hat based linuxes
-dpkg -i libwiringx*.rpm
-```
-
-wiringX is available in the Arch Linux ARM repository. To install, simply:
-```
-pacman -S wiringx-git
-```
-Pin numbering of the Raspberry Pi, Hummingboard, BananaPi and Radxa Rock can be found here:
-http://wiringx.org/
